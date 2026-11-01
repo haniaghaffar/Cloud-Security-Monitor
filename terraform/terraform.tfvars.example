@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars and set values for your Azure deployment.
+# Authenticate with Azure CLI (az login) or service-principal/OIDC environment variables.
+# Never store credentials or deployment tokens in this file.
+
+# subscription_id = "00000000-0000-0000-0000-000000000000"
+project_name = "csm-frontend"
+environment  = "development"
+location     = "Central US"
