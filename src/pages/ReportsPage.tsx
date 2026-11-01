@@ -197,7 +197,7 @@ export default function ReportsPage() {
       >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <label className=" text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
               <span>Time Horizon</span>
             </label>
@@ -255,7 +255,7 @@ export default function ReportsPage() {
       {isLoading && (
         <div className="py-12 flex flex-col items-center justify-center text-slate-500 text-xs">
           <div className="w-8 h-8 border-2 border-brand-600 border-t-transparent rounded-full animate-spin mb-2" />
-          <span>Generating audit report from Azure API...</span>
+          <span>Generating audit report from the configured backend...</span>
         </div>
       )}
 
@@ -274,7 +274,7 @@ export default function ReportsPage() {
           title="No records found for selected audit scope"
           description="Adjust the time horizon or severity threshold to include findings in this audit report."
         />
-      ) : (
+      ) : !isLoading && findings.length > 0 ? (
         <Card
           padding="none"
           header={
@@ -329,7 +329,7 @@ export default function ReportsPage() {
             </table>
           </div>
         </Card>
-      )}
+      ) : null}
     </div>
   );
 }
