@@ -1,295 +1,174 @@
-Cloud Security Monitor
+# Cloud Security Monitor
 
 <p align="center">
-
-<strong>{=html}Cloud Security Monitor</strong>{=html}<br />{=html}
-<em>{=html}A cloud-native security monitoring dashboard for
-identifying, investigating, and tracking suspicious cloud
-activity.</em>{=html}
-
+  <strong>A Cloud-Native Security Monitoring & Threat Detection Platform</strong><br />
+  Monitor cloud activity, detect suspicious behaviour, and investigate security incidents through a centralized dashboard.
 </p>
 
 <p align="center">
-
-<img alt="Platform" src="https://img.shields.io/badge/Cloud-Microsoft%20Azure-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white" />{=html}
-<img alt="Frontend" src="https://img.shields.io/badge/Frontend-React%20%7C%20TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />{=html}
-<img alt="Styling" src="https://img.shields.io/badge/Styling-Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />{=html}
-<img alt="Infrastructure" src="https://img.shields.io/badge/IaC-Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" />{=html}
-
+  <img src="https://img.shields.io/badge/Cloud-Microsoft%20Azure-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white" />
+  <img src="https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/Language-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Styling-Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/badge/IaC-Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" />
 </p>
 
-Overview
+---
 
-Cloud Security Monitor is a cloud security monitoring solution
-designed to help teams gain visibility into cloud activity, identify
-potentially malicious behaviour, and investigate security incidents from
-one centralized dashboard.
+## Overview
 
-The platform is designed around a detection-and-response workflow:
+**Cloud Security Monitor** is a cloud security monitoring solution designed to help teams gain visibility into cloud activity, identify potentially malicious behaviour, and investigate security incidents through a centralized dashboard.
 
-Collect cloud activity and security logs.
+The platform follows a detection-and-monitoring workflow:
 
-Process events and evaluate them against security detection rules.
+1. Collect cloud activity and security logs.
+2. Process events using security detection rules.
+3. Identify suspicious activities and generate security findings.
+4. Assign severity levels to detected threats.
+5. Store findings for investigation and tracking.
+6. Display security insights through an interactive dashboard.
+7. Support alerts and reporting for security monitoring.
 
-Generate structured findings with severity levels.
+The project uses **Microsoft Azure** as its cloud platform.
 
-Store findings for investigation and tracking.
+## Key Features
 
-Present security insights through a web dashboard.
+### 1. Security Overview Dashboard
 
-Support alerting and reporting so that important incidents are not
-overlooked.
+Provides a centralized view of the cloud security posture, including:
 
-The current project direction uses Microsoft Azure. The original
-project concept described an AWS-based design; the implementation
-direction was subsequently changed to Azure. Azure services and
-infrastructure should therefore be configured according to the final
-team architecture and backend integration contract.
+* Total monitored events
+* Threats detected today
+* Severity distribution
+* Top risky IP addresses
+* Recent security findings
+
+### 2. Threat Timeline
+
+Displays security findings chronologically with filtering options:
+
+* Date and time range
+* Severity level
+* Event type
+* Finding status
 
-Key Objectives
+### 3. Incident Details
 
-Centralize security findings in one dashboard.
-
-Make suspicious cloud activity easier to identify.
-
-Prioritize incidents using severity levels.
-
-Provide enough event context to support investigation.
-
-Track findings through their lifecycle.
-
-Support a maintainable frontend and repeatable infrastructure
-workflow.
-
-Core Features
-
-1. Security Overview
-
-A dashboard overview intended to provide a quick snapshot of the cloud
-security posture, including:
-
-Total monitored events
-
-Threats detected today
-
-Severity distribution
-
-Top risky source IP addresses
-
-Recent security findings
-
-2. Threat Timeline
-
-A chronological view of security findings, with filtering options
-intended for:
-
-Date or time range
-
-Severity
-
-Event type
-
-Finding status
-
-3. Incident Details
-
-A focused investigation view for an individual finding, designed to
-show:
-
-Event timestamp and type
-
-Severity
-
-User or role involved
-
-Source IP address
-
-Region or country, when available
-
-Event description and reason it was flagged
-
-Recommended action
-
-Current finding status
-
-4. Alert Settings
-
-A settings area for configuring which severity levels should generate
-notifications. Actual notification delivery depends on the backend and
-Azure alerting configuration.
-
-5. Reports
-
-A reporting area intended to support exporting security findings and
-summaries in CSV and PDF formats.
-
-6. Authentication
-
-The frontend is designed to integrate with Microsoft Entra ID for
-sign-in. Authentication requires valid tenant/application configuration
-and a matching identity configuration in the Azure environment.
-
-Detection Scenarios
-
-The detection logic is intended to identify suspicious or risky cloud
-activity, including:
-
-Scenario                            What it may indicate
-
-Repeated failed sign-in attempts    Possible brute-force activity or
-credential guessing
-
-Sign-in from an unusual region      Potential account compromise or
-unexpected access
-
-Root or highly privileged account   Risky use of elevated privileges
-usage
-
-IAM / role permission changes       Unexpected privilege escalation or
-access changes
-
-Security rule opened to 0.0.0.0/0 Resource exposed to the public
-internet
-
-Public storage access               Potential unintended data exposure
-
-Detection rules, event sources, and supported fields must match the
-backend implementation. The scenarios above describe the project
-scope; they do not imply that every rule is already deployed.
-
-Severity Levels
-
-Severity                            Meaning
-
-Critical                        A potentially severe security issue
-requiring immediate investigation
-
-High                            A significant risk that should be
-reviewed promptly
-
-Medium                          Suspicious activity that needs
-investigation
-
-Architecture
-
-The intended Azure-oriented architecture separates event collection and
-detection from the dashboard experience.
-
-Cloud Activity / Diagnostic Logs
-              |
-              v
-       Azure Log Sources
-              |
-              v
-     Processing & Detection
-       (Azure Functions)
-              |
-              v
-       Findings Storage
-        (Azure Cosmos DB)
-              |
-              v
-       Backend API Layer
-     (API Management / API)
-              |
-              v
-       React Web Dashboard
-              |
-              v
-     Microsoft Entra ID Sign-in
-
-       Alerting / Notifications
-     (Azure-based alert workflow)
-
-Azure service mapping
-
-The following is the proposed Azure direction for the original
-AWS-oriented design. Final service selection and ownership must be
-confirmed with the backend/DevOps team.
-
-Original design component           Azure-oriented option
-
-AWS CloudTrail                      Azure Activity Logs
-
-VPC Flow Logs                       Azure network diagnostic / flow-log
-solution, subject to current Azure
-service support
-
-Amazon S3                           Azure Blob Storage
-
-AWS Lambda                          Azure Functions
-
-Amazon DynamoDB                     Azure Cosmos DB
-
-Amazon SNS                          Azure Monitor alerting, Logic Apps,
-or another agreed notification
-service
-
-Amazon API Gateway                  Azure API Management or an agreed
-API hosting layer
-
-Amazon Cognito                      Microsoft Entra ID
-
-Important: This table is an architectural mapping, not a statement
-that these Azure resources have already been provisioned. The final
-design should avoid creating duplicate resources owned by another team
-member.
-
-Frontend & DevOps Scope
-
-The frontend/DevOps workstream focuses on:
-
-Building the React dashboard and its reusable UI components.
-
-Implementing the overview, timeline, incident, settings, and reports
-screens.
-
-Integrating the frontend with the agreed backend API contract.
-
-Connecting sign-in through Microsoft Entra ID.
-
-Managing environment-based configuration.
-
-Preparing Azure infrastructure using Terraform, where included in
-the final team scope.
-
-Setting up GitHub Actions for validation and deployment workflows.
-
-Documenting setup, configuration, and backend integration
-requirements.
-
-Technology Stack
-
-Area                                Technology
-
-Frontend framework                  React
-
-Language                            TypeScript
-
-Build tool                          Vite
-
-Styling                             Tailwind CSS
-
-Authentication                      Microsoft Entra ID (MSAL
-integration)
-
-Cloud platform                      Microsoft Azure
-
-Infrastructure as Code              Terraform
-
-CI/CD                               GitHub Actions
-
-The exact Azure services, API routes, and deployment target should be
-confirmed against the current repository and team implementation.
-
-Project Structure
-
-A typical frontend structure for this project may look like the
-following. The actual repository structure should take precedence if it
-differs.
-
+Provides detailed information about individual security incidents:
+
+* Event timestamp
+* Event type
+* Severity level
+* User or role involved
+* Source IP address
+* Region or country
+* Description of suspicious activity
+* Reason for detection
+* Recommended actions
+* Incident status
+
+### 4. Alert Settings
+
+Provides configuration options for selecting severity levels that should trigger notifications.
+
+### 5. Reports
+
+Supports security reporting with CSV and PDF export functionality.
+
+### 6. Authentication
+
+Designed to integrate with **Microsoft Entra ID** for secure user authentication.
+
+## Threat Detection Scenarios
+
+The system is designed to identify suspicious cloud activities, including:
+
+| Detection Scenario       | Description                                                    |
+| ------------------------ | -------------------------------------------------------------- |
+| Repeated Failed Logins   | Detects multiple unsuccessful authentication attempts.         |
+| Unusual Login Region     | Identifies access from unexpected geographical locations.      |
+| Privileged Account Usage | Monitors potentially risky use of privileged accounts.         |
+| IAM / Role Changes       | Detects unexpected permission changes or privilege escalation. |
+| Public Security Group    | Identifies security rules exposed to `0.0.0.0/0`.              |
+| Public Storage Access    | Detects potentially unintended public storage exposure.        |
+| Logging Disabled         | Identifies attempts to disable or modify security logging.     |
+
+## Severity Levels
+
+| Severity | Description                                       |
+| -------- | ------------------------------------------------- |
+| Critical | Requires immediate investigation and response.    |
+| High     | Represents a significant security risk.           |
+| Medium   | Suspicious activity requiring investigation.      |
+| Low      | Lower-priority activity that should be monitored. |
+
+## System Architecture
+
+The project follows an Azure-oriented architecture designed to collect, process, analyze, and present cloud security events.
+
+```text
+        Cloud Activity & Logs
+                 |
+                 v
+          Azure Log Sources
+                 |
+                 v
+       Processing & Detection
+          Azure Functions
+                 |
+                 v
+          Findings Storage
+           Azure Cosmos DB
+                 |
+                 v
+           Backend API
+                 |
+                 v
+       React Security Dashboard
+                 |
+                 v
+        Microsoft Entra ID
+
+          Alert Notifications
+          Azure Alert Services
+```
+
+### Azure Technology Mapping
+
+| Component                 | Azure Technology     |
+| ------------------------- | -------------------- |
+| Activity Monitoring       | Azure Activity Logs  |
+| Log Storage               | Azure Blob Storage   |
+| Event Processing          | Azure Functions      |
+| Findings Storage          | Azure Cosmos DB      |
+| API Management            | Azure API Management |
+| Authentication            | Microsoft Entra ID   |
+| Infrastructure Automation | Terraform            |
+| CI/CD                     | GitHub Actions       |
+
+*Note: Final Azure service selection and deployment depend on the team's implemented architecture.*
+
+## Technology Stack
+
+| Category               | Technology                |
+| ---------------------- | ------------------------- |
+| Frontend               | React                     |
+| Programming Language   | TypeScript                |
+| Build Tool             | Vite                      |
+| Styling                | Tailwind CSS              |
+| Authentication         | Microsoft Entra ID / MSAL |
+| Cloud Platform         | Microsoft Azure           |
+| Infrastructure as Code | Terraform                 |
+| CI/CD                  | GitHub Actions            |
+| Backend Communication  | REST API                  |
+
+## Project Structure
+
+```text
 cloud-security-monitor/
+│
 ├── public/
+│
 ├── src/
 │   ├── assets/
 │   ├── components/
@@ -300,260 +179,180 @@ cloud-security-monitor/
 │   │   ├── IncidentDetails/
 │   │   ├── AlertSettings/
 │   │   └── Reports/
+│   │
 │   ├── services/
 │   │   ├── api/
 │   │   └── auth/
+│   │
 │   ├── hooks/
 │   ├── types/
 │   ├── utils/
 │   ├── App.tsx
 │   └── main.tsx
+│
 ├── infrastructure/
 │   └── terraform/
+│
 ├── .github/
 │   └── workflows/
+│
 ├── .env.example
 ├── package.json
 └── README.md
+```
 
-Getting Started
+*The actual repository structure may differ.*
 
-Prerequisites
+## Getting Started
 
-Install the following before running the frontend:
+### Prerequisites
 
-Node.js (use the version supported by the repository)
+Make sure you have installed:
 
-npm, pnpm, or yarn (use the package manager indicated by the
-lockfile)
+* Node.js
+* npm
+* Git
+* Access to the configured backend API
+* Microsoft Entra ID application configuration (for authentication)
 
-Git
+### 1. Clone the Repository
 
-Access to the configured backend API
-
-Microsoft Entra ID application details for authentication, when
-authentication is enabled
-
-1. Clone the repository
-
+```bash
 git clone <YOUR_REPOSITORY_URL>
-cd <YOUR_PROJECT_DIRECTORY>
+cd cloud-security-monitor
+```
 
-Replace the placeholders with the actual repository URL and directory
-name.
+### 2. Install Dependencies
 
-2. Install dependencies
-
-Use the package manager matching the repository lockfile.
-
+```bash
 npm install
+```
 
-3. Configure environment variables
+### 3. Configure Environment Variables
 
-Create a local .env file in the project root. Do not commit real
-credentials or secrets.
+Create a `.env` file in the project root:
 
+```env
 VITE_API_BASE_URL=
 VITE_AUTH_CLIENT_ID=
 VITE_AUTH_TENANT_ID=
+```
 
-Variable                Purpose
+| Variable              | Purpose                           |
+| --------------------- | --------------------------------- |
+| `VITE_API_BASE_URL`   | Backend API base URL              |
+| `VITE_AUTH_CLIENT_ID` | Microsoft Entra ID application ID |
+| `VITE_AUTH_TENANT_ID` | Microsoft Entra ID tenant ID      |
 
-VITE_API_BASE_URL     Base URL of the backend API
-VITE_AUTH_CLIENT_ID   Microsoft Entra ID application/client ID
-VITE_AUTH_TENANT_ID   Microsoft Entra ID tenant ID
+**Security Note:** Never store client secrets, passwords, private keys, or other confidential credentials in frontend environment variables.
 
-Only use the variables that are actually referenced by the application.
-Any additional configuration required by the final implementation should
-be documented in .env.example.
+### 4. Run the Development Server
 
-Vite exposes VITE_* values to the browser bundle. Never place client
-secrets, private keys, passwords, or other confidential credentials in
-frontend environment variables.
-
-4. Start the development server
-
+```bash
 npm run dev
+```
 
-Open the local URL printed by Vite in your terminal.
+Open the local URL provided by Vite.
 
-5. Create a production build
+### 5. Build for Production
 
+```bash
 npm run build
+```
 
-Run the repository's linting, type-checking, and test scripts as
-available:
+## Backend Integration
 
-npm run lint
-npm run typecheck
-npm test
+The frontend communicates with the backend through a centralized API service layer.
 
-Script names vary by repository. Check package.json and use the
-scripts that are actually defined.
+The expected security finding structure includes:
 
-Backend Integration
-
-The frontend should consume real backend data through a centralized API
-service layer. The frontend and backend teams must agree on endpoint
-paths, HTTP methods, authentication requirements, and response schemas
-before integration is considered complete.
-
-The finding model is expected to carry information corresponding to
-fields such as:
-
-type FindingStatus = "open" | "reviewed" | "resolved";
-type Severity = "low" | "medium" | "high" | "critical";
-
+```ts
 interface SecurityFinding {
   finding_id: string;
   timestamp: string;
   event_type: string;
-  severity: Severity;
+  severity: "low" | "medium" | "high" | "critical";
   user_or_role: string;
   source_ip: string;
   region?: string;
   country?: string;
   description: string;
-  status: FindingStatus;
+  status: "open" | "reviewed" | "resolved";
 }
+```
 
-This is a starting data shape based on the project specification,
-not a confirmed backend API response. Adjust it to the schema agreed
-with the backend team.
+The final API endpoints, authentication requirements, and response structures must follow the contract agreed upon by the frontend and backend teams.
 
-Before connecting the frontend, confirm:
+## Infrastructure & CI/CD
 
-Findings list and individual finding endpoints
+The DevOps workflow is designed around:
 
-Dashboard statistics and severity aggregation endpoints
+* Terraform for infrastructure as code.
+* Azure resources for cloud deployment.
+* GitHub Actions for automated workflows.
+* Automated linting and TypeScript validation.
+* Production build verification.
+* Infrastructure formatting and validation.
+* Controlled deployment workflows.
 
-Timeline filtering and pagination behaviour
+Infrastructure changes should be reviewed before applying them to the Azure environment.
 
-Alert settings read/update endpoints
+## Security Considerations
 
-Report export strategy
+* Secure authentication through Microsoft Entra ID.
+* Environment-based configuration.
+* No hardcoded credentials or secrets.
+* HTTPS communication.
+* Secure API integration.
+* Backend-side authorization and validation.
+* Least-privilege access to cloud resources.
+* Terraform configuration review.
+* Dependency security checks.
 
-Authentication token requirements and API authorization rules
+## Project Status
 
-Standard error response format
+Implementation and integration status should be updated as each component is completed and verified.
 
-See BACKEND_INTEGRATION.md if it exists in the repository for the
-implementation-specific integration contract.
+* [ ] Frontend Dashboard
+* [ ] Threat Timeline
+* [ ] Incident Details
+* [ ] Alert Settings
+* [ ] Reports and Export Functionality
+* [ ] Microsoft Entra ID Authentication
+* [ ] Live Backend API Integration
+* [ ] Azure Infrastructure
+* [ ] Terraform Configuration
+* [ ] GitHub Actions CI/CD
+* [ ] End-to-End Testing
+* [ ] Cloud Deployment
 
-Infrastructure & CI/CD
+## Team Responsibilities
 
-Terraform and GitHub Actions are intended to support repeatable
-infrastructure management and automated quality checks.
+The project is developed collaboratively.
 
-A recommended workflow is:
+The frontend and DevOps workstream focuses on:
 
-Install dependencies using the committed lockfile.
+* React dashboard development.
+* UI components and responsive layouts.
+* Backend API integration.
+* Microsoft Entra ID authentication.
+* Azure infrastructure configuration.
+* Terraform automation.
+* GitHub Actions CI/CD.
+* Frontend testing and documentation.
 
-Run linting and TypeScript checks.
+Backend event collection, threat detection, data storage, and alert processing are coordinated with the backend workstream.
 
-Run automated tests.
+## Contributing
 
-Generate a production build.
+Contributions are welcome.
 
-Validate Terraform formatting and configuration.
+1. Create a feature branch.
+2. Implement your changes.
+3. Follow the existing project structure.
+4. Test your changes locally.
+5. Submit a pull request with a clear description.
 
-Deploy only through an explicitly configured and authorized
-deployment workflow.
+## License
 
-Infrastructure deployment must use the team's approved Azure
-subscription, resource naming, state management, permissions, and
-authentication method. Prefer federated/OIDC authentication for GitHub
-Actions where supported by the environment.
-
-No infrastructure should be applied or destroyed automatically as part
-of a local setup step. Review Terraform plans and obtain the required
-team approval before provisioning or changing Azure resources.
-
-Security Considerations
-
-Do not commit .env files, credentials, access tokens, or private
-keys.
-
-Keep secrets in an approved secret manager or CI/CD secret store.
-
-Do not expose privileged credentials in frontend code.
-
-Validate and handle API responses safely.
-
-Enforce authorization on the backend; hiding a frontend control is
-not access control.
-
-Use HTTPS for deployed application and API traffic.
-
-Configure Entra ID redirect URIs and allowed origins for the correct
-environments.
-
-Apply least-privilege access to Azure resources and deployment
-identities.
-
-Review Terraform changes before applying them.
-
-Keep dependencies updated and review security advisories.
-
-Current Implementation Status
-
-This README describes the project scope and intended Azure-oriented
-architecture. It does not claim that cloud resources, backend
-endpoints, authentication, alert delivery, or production deployment are
-already operational.
-
-Update this section as the team completes and verifies each component:
-
-Frontend pages and responsive layouts
-
-Microsoft Entra ID authentication
-
-Live backend API integration
-
-Real findings and dashboard statistics
-
-Timeline filtering and incident details
-
-Alert settings integration
-
-CSV/PDF report generation
-
-Azure infrastructure provisioned and validated
-
-GitHub Actions checks
-
-Authorized deployment to the selected Azure hosting service
-
-End-to-end testing with real cloud events
-
-Team Responsibilities
-
-The project is developed collaboratively. The frontend/DevOps workstream
-covers the dashboard, identity integration, API consumption,
-infrastructure automation, and CI/CD coordination. Backend event
-collection, detection, persistence, and alerting must follow the
-responsibilities and interfaces agreed by the team.
-
-Coordinate API schemas, Azure resource ownership, environment
-configuration, and deployment permissions before merging cross-team
-integration changes.
-
-Contributing
-
-Create a feature branch for your change.
-
-Keep changes focused and consistent with the existing project
-structure.
-
-Update types and documentation when API contracts change.
-
-Run the available lint, type-check, test, and build commands.
-
-Open a pull request with a clear summary and testing notes.
-
-Do not commit secrets, local environment files, or generated
-credentials.
-
-License
-
-Add the project's selected license here before public distribution.
+This project is developed for educational and academic purposes.
