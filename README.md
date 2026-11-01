@@ -1,98 +1,559 @@
-# Cloud Security Monitor
+Cloud Security Monitor
 
-React, TypeScript, Vite, and Tailwind CSS frontend for the Cloud Security Monitor. The frontend consumes Member 1's Azure backend and uses Microsoft Entra ID through MSAL; it does not provision backend, database, or identity resources.
+<p align="center">
 
-## Azure architecture
+<strong>{=html}Cloud Security Monitor</strong>{=html}<br />{=html}
+<em>{=html}A cloud-native security monitoring dashboard for
+identifying, investigating, and tracking suspicious cloud
+activity.</em>{=html}
 
-```text
-Browser -- HTTPS --> Azure Static Web Apps (React/Vite static build)
-   |                         |
-   +-- MSAL / Entra ID       +-- SPA route fallback and security headers
-   |
-   +-- HTTPS API requests --> Member 1's Azure backend (configured separately)
-```
+</p>
 
-Terraform provisions only a frontend resource group and an **Azure Static Web App (Free tier)**. Static Web Apps provides managed HTTPS and a default hostname without a separately billed CDN, storage account, or Front Door. The app shell is intentionally public; application sign-in is handled by the existing Entra/MSAL integration, and backend authorization remains the backend's responsibility. Public network access is enabled for the site, while GitHub production publishing is restricted to the protected `main` branch/environment and a narrowly scoped OIDC identity.
+<p align="center">
 
-`public/staticwebapp.config.json` configures React Router's SPA fallback and baseline response security headers. No backend/API or identity resources are created by this project.
+<img alt="Platform" src="https://img.shields.io/badge/Cloud-Microsoft%20Azure-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white" />{=html}
+<img alt="Frontend" src="https://img.shields.io/badge/Frontend-React%20%7C%20TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />{=html}
+<img alt="Styling" src="https://img.shields.io/badge/Styling-Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />{=html}
+<img alt="Infrastructure" src="https://img.shields.io/badge/IaC-Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" />{=html}
 
-## Local development and environment configuration
+</p>
 
-Requirements: Node.js 22 and npm. Install and run:
+Overview
 
-```sh
-npm ci
+Cloud Security Monitor is a cloud security monitoring solution
+designed to help teams gain visibility into cloud activity, identify
+potentially malicious behaviour, and investigate security incidents from
+one centralized dashboard.
+
+The platform is designed around a detection-and-response workflow:
+
+Collect cloud activity and security logs.
+
+Process events and evaluate them against security detection rules.
+
+Generate structured findings with severity levels.
+
+Store findings for investigation and tracking.
+
+Present security insights through a web dashboard.
+
+Support alerting and reporting so that important incidents are not
+overlooked.
+
+The current project direction uses Microsoft Azure. The original
+project concept described an AWS-based design; the implementation
+direction was subsequently changed to Azure. Azure services and
+infrastructure should therefore be configured according to the final
+team architecture and backend integration contract.
+
+Key Objectives
+
+Centralize security findings in one dashboard.
+
+Make suspicious cloud activity easier to identify.
+
+Prioritize incidents using severity levels.
+
+Provide enough event context to support investigation.
+
+Track findings through their lifecycle.
+
+Support a maintainable frontend and repeatable infrastructure
+workflow.
+
+Core Features
+
+1. Security Overview
+
+A dashboard overview intended to provide a quick snapshot of the cloud
+security posture, including:
+
+Total monitored events
+
+Threats detected today
+
+Severity distribution
+
+Top risky source IP addresses
+
+Recent security findings
+
+2. Threat Timeline
+
+A chronological view of security findings, with filtering options
+intended for:
+
+Date or time range
+
+Severity
+
+Event type
+
+Finding status
+
+3. Incident Details
+
+A focused investigation view for an individual finding, designed to
+show:
+
+Event timestamp and type
+
+Severity
+
+User or role involved
+
+Source IP address
+
+Region or country, when available
+
+Event description and reason it was flagged
+
+Recommended action
+
+Current finding status
+
+4. Alert Settings
+
+A settings area for configuring which severity levels should generate
+notifications. Actual notification delivery depends on the backend and
+Azure alerting configuration.
+
+5. Reports
+
+A reporting area intended to support exporting security findings and
+summaries in CSV and PDF formats.
+
+6. Authentication
+
+The frontend is designed to integrate with Microsoft Entra ID for
+sign-in. Authentication requires valid tenant/application configuration
+and a matching identity configuration in the Azure environment.
+
+Detection Scenarios
+
+The detection logic is intended to identify suspicious or risky cloud
+activity, including:
+
+Scenario                            What it may indicate
+
+Repeated failed sign-in attempts    Possible brute-force activity or
+credential guessing
+
+Sign-in from an unusual region      Potential account compromise or
+unexpected access
+
+Root or highly privileged account   Risky use of elevated privileges
+usage
+
+IAM / role permission changes       Unexpected privilege escalation or
+access changes
+
+Security rule opened to 0.0.0.0/0 Resource exposed to the public
+internet
+
+Public storage access               Potential unintended data exposure
+
+Detection rules, event sources, and supported fields must match the
+backend implementation. The scenarios above describe the project
+scope; they do not imply that every rule is already deployed.
+
+Severity Levels
+
+Severity                            Meaning
+
+Critical                        A potentially severe security issue
+requiring immediate investigation
+
+High                            A significant risk that should be
+reviewed promptly
+
+Medium                          Suspicious activity that needs
+investigation
+
+Architecture
+
+The intended Azure-oriented architecture separates event collection and
+detection from the dashboard experience.
+
+Cloud Activity / Diagnostic Logs
+              |
+              v
+       Azure Log Sources
+              |
+              v
+     Processing & Detection
+       (Azure Functions)
+              |
+              v
+       Findings Storage
+        (Azure Cosmos DB)
+              |
+              v
+       Backend API Layer
+     (API Management / API)
+              |
+              v
+       React Web Dashboard
+              |
+              v
+     Microsoft Entra ID Sign-in
+
+       Alerting / Notifications
+     (Azure-based alert workflow)
+
+Azure service mapping
+
+The following is the proposed Azure direction for the original
+AWS-oriented design. Final service selection and ownership must be
+confirmed with the backend/DevOps team.
+
+Original design component           Azure-oriented option
+
+AWS CloudTrail                      Azure Activity Logs
+
+VPC Flow Logs                       Azure network diagnostic / flow-log
+solution, subject to current Azure
+service support
+
+Amazon S3                           Azure Blob Storage
+
+AWS Lambda                          Azure Functions
+
+Amazon DynamoDB                     Azure Cosmos DB
+
+Amazon SNS                          Azure Monitor alerting, Logic Apps,
+or another agreed notification
+service
+
+Amazon API Gateway                  Azure API Management or an agreed
+API hosting layer
+
+Amazon Cognito                      Microsoft Entra ID
+
+Important: This table is an architectural mapping, not a statement
+that these Azure resources have already been provisioned. The final
+design should avoid creating duplicate resources owned by another team
+member.
+
+Frontend & DevOps Scope
+
+The frontend/DevOps workstream focuses on:
+
+Building the React dashboard and its reusable UI components.
+
+Implementing the overview, timeline, incident, settings, and reports
+screens.
+
+Integrating the frontend with the agreed backend API contract.
+
+Connecting sign-in through Microsoft Entra ID.
+
+Managing environment-based configuration.
+
+Preparing Azure infrastructure using Terraform, where included in
+the final team scope.
+
+Setting up GitHub Actions for validation and deployment workflows.
+
+Documenting setup, configuration, and backend integration
+requirements.
+
+Technology Stack
+
+Area                                Technology
+
+Frontend framework                  React
+
+Language                            TypeScript
+
+Build tool                          Vite
+
+Styling                             Tailwind CSS
+
+Authentication                      Microsoft Entra ID (MSAL
+integration)
+
+Cloud platform                      Microsoft Azure
+
+Infrastructure as Code              Terraform
+
+CI/CD                               GitHub Actions
+
+The exact Azure services, API routes, and deployment target should be
+confirmed against the current repository and team implementation.
+
+Project Structure
+
+A typical frontend structure for this project may look like the
+following. The actual repository structure should take precedence if it
+differs.
+
+cloud-security-monitor/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── pages/
+│   │   ├── Login/
+│   │   ├── Overview/
+│   │   ├── ThreatTimeline/
+│   │   ├── IncidentDetails/
+│   │   ├── AlertSettings/
+│   │   └── Reports/
+│   ├── services/
+│   │   ├── api/
+│   │   └── auth/
+│   ├── hooks/
+│   ├── types/
+│   ├── utils/
+│   ├── App.tsx
+│   └── main.tsx
+├── infrastructure/
+│   └── terraform/
+├── .github/
+│   └── workflows/
+├── .env.example
+├── package.json
+└── README.md
+
+Getting Started
+
+Prerequisites
+
+Install the following before running the frontend:
+
+Node.js (use the version supported by the repository)
+
+npm, pnpm, or yarn (use the package manager indicated by the
+lockfile)
+
+Git
+
+Access to the configured backend API
+
+Microsoft Entra ID application details for authentication, when
+authentication is enabled
+
+1. Clone the repository
+
+git clone <YOUR_REPOSITORY_URL>
+cd <YOUR_PROJECT_DIRECTORY>
+
+Replace the placeholders with the actual repository URL and directory
+name.
+
+2. Install dependencies
+
+Use the package manager matching the repository lockfile.
+
+npm install
+
+3. Configure environment variables
+
+Create a local .env file in the project root. Do not commit real
+credentials or secrets.
+
+VITE_API_BASE_URL=
+VITE_AUTH_CLIENT_ID=
+VITE_AUTH_TENANT_ID=
+
+Variable                Purpose
+
+VITE_API_BASE_URL     Base URL of the backend API
+VITE_AUTH_CLIENT_ID   Microsoft Entra ID application/client ID
+VITE_AUTH_TENANT_ID   Microsoft Entra ID tenant ID
+
+Only use the variables that are actually referenced by the application.
+Any additional configuration required by the final implementation should
+be documented in .env.example.
+
+Vite exposes VITE_* values to the browser bundle. Never place client
+secrets, private keys, passwords, or other confidential credentials in
+frontend environment variables.
+
+4. Start the development server
+
 npm run dev
-```
 
-The app reads these Vite variables:
+Open the local URL printed by Vite in your terminal.
 
-| Variable | Development | Production |
-| --- | --- | --- |
-| `VITE_API_BASE_URL` | Leave empty until the real backend URL is available. | Required HTTPS URL for Member 1's backend. |
-| `VITE_AUTH_CLIENT_ID` | Entra public SPA application ID, when configured. | Required Entra public SPA application ID. |
-| `VITE_AUTH_TENANT_ID` | Entra directory/tenant ID, when configured. | Required Entra directory/tenant ID. |
-| `VITE_AUTH_API_SCOPE` | Delegated API permission supplied by Member 1, when configured. | Required delegated scope exposed by Member 1's backend API. |
-| `VITE_AUTH_REDIRECT_URI` | Usually `http://localhost:5173`. | Optional; defaults to the deployed site origin. |
+5. Create a production build
 
-Use [.env.development.example](./.env.development.example) and [.env.production.example](./.env.production.example) as templates. For local development, create `.env.development.local` and supply only real configuration values. These local files are ignored by Git. Vite variables are public and embedded in the downloaded bundle: **never put client secrets, access tokens, or other credentials in them**. An empty value does not enable mock data or fake authentication.
+npm run build
 
-Production deployment intentionally fails unless the real HTTPS API URL, Entra IDs, delegated backend API scope, and Azure resource/authentication variables have been configured. The backend API scope must be exposed by Member 1's Entra application; the frontend does not request Microsoft Graph permissions. If Member 1's backend or Entra application is not ready, configure those values before enabling deployment; do not substitute demo URLs, fake IDs, or mock data.
+Run the repository's linting, type-checking, and test scripts as
+available:
 
-The assumed API paths and request/response shapes are **proposed frontend expectations, not a confirmed backend contract**. See [docs/BACKEND_INTEGRATION.md](./docs/BACKEND_INTEGRATION.md) for the details Member 1 must confirm before connecting production.
-
-## Terraform setup
-
-Terraform 1.5+ and Azure access to the target subscription are required. The official `hashicorp/azurerm` provider (4.x) is used. Terraform state is local by default; no remote backend is configured because no state storage account has been provided. Provider-computed sensitive values may be held in Terraform state: keep state private, never commit it, and do not put credentials in `.tfvars`.
-
-```sh
-cd terraform
-cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars for the chosen environment and region.
-az login
-terraform init
-terraform fmt -check -recursive
-terraform validate
-terraform plan
-```
-
-The subscription can be selected using `ARM_SUBSCRIPTION_ID` or the optional `subscription_id` variable. Review the plan before provisioning. **Do not run `terraform apply` or `terraform destroy` without explicit approval.** For production, use a separate state directory/workspace and state file from development; for example, create/select a `production` workspace and run `terraform plan -var="environment=production"`. Keep state protected and backed up. Outputs include the Static Web App name, resource group, and HTTPS URL. Copy the resource group and app name to the GitHub production environment variables below.
-
-To clean up, review the target state and plan first, then run `terraform destroy` only with explicit approval. This removes the frontend resource group and Static Web App; it does not remove Member 1's backend resources.
-
-## GitHub Actions
-
-- [Frontend CI](./.github/workflows/frontend-ci.yml) runs on pushes and pull requests. It uses `npm ci` with `package-lock.json`, lint, TypeScript checks, `qa_test.mjs`, and a production build.
-- [Azure deployment](./.github/workflows/deploy-azure.yml) runs on pushes to `main`. It repeats the same quality gates, so any failure blocks deployment, then builds with production variables and deploys to Azure Static Web Apps.
-
-Create a GitHub **Environment** named `production`. Add these environment **variables** (not secrets):
-
-| Variable | Value |
-| --- | --- |
-| `AZURE_CLIENT_ID` | Microsoft Entra service principal/application client ID configured for GitHub OIDC. |
-| `AZURE_TENANT_ID` | Microsoft Entra tenant ID. |
-| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID. |
-| `AZURE_RESOURCE_GROUP` | Terraform `resource_group_name` output. |
-| `AZURE_STATIC_WEB_APP_NAME` | Terraform `static_web_app_name` output. |
-| `VITE_API_BASE_URL` | Actual HTTPS API URL supplied by Member 1. |
-| `VITE_AUTH_CLIENT_ID` | Entra public SPA application ID. |
-| `VITE_AUTH_TENANT_ID` | Entra directory/tenant ID. |
-| `VITE_AUTH_REDIRECT_URI` | Optional registered redirect URI; defaults to the Static Web App origin. |
-
-Configure a Microsoft Entra federated identity credential for the GitHub repository with subject `repo:<OWNER>/<REPOSITORY>:environment:production`, issuer `https://token.actions.githubusercontent.com`, and audience `api://AzureADTokenExchange`. Grant its service principal only the Azure permissions needed to read the Static Web App deployment token and deploy to that app (for example, an appropriately scoped Static Web App Contributor assignment). No client secret is needed. The workflow uses `azure/login` with GitHub OIDC and fetches the deployment token at runtime; it does not use a long-lived Azure credential secret or expose the token as a Terraform output.
-
-Restrict the `production` environment to the `main` branch and configure required reviewers if production approval is needed. Add the deployed HTTPS origin to the Entra SPA registration's redirect URIs. The workflow only publishes static frontend content; it never provisions infrastructure or deploys the backend.
-
-## Validation and cost
-
-Run local frontend checks with:
-
-```sh
-npm ci
 npm run lint
 npm run typecheck
-node qa_test.mjs
-npm run build
-```
+npm test
 
-Terraform validation commands are listed above. The Azure Static Web Apps Free plan avoids dedicated compute, storage, and Front Door costs for this static frontend, subject to Microsoft's current free-tier quotas and availability. Enabling a custom domain, higher-tier features, traffic beyond quota, or other Azure services may incur charges; review current Azure pricing and the plan before provisioning.
+Script names vary by repository. Check package.json and use the
+scripts that are actually defined.
+
+Backend Integration
+
+The frontend should consume real backend data through a centralized API
+service layer. The frontend and backend teams must agree on endpoint
+paths, HTTP methods, authentication requirements, and response schemas
+before integration is considered complete.
+
+The finding model is expected to carry information corresponding to
+fields such as:
+
+type FindingStatus = "open" | "reviewed" | "resolved";
+type Severity = "low" | "medium" | "high" | "critical";
+
+interface SecurityFinding {
+  finding_id: string;
+  timestamp: string;
+  event_type: string;
+  severity: Severity;
+  user_or_role: string;
+  source_ip: string;
+  region?: string;
+  country?: string;
+  description: string;
+  status: FindingStatus;
+}
+
+This is a starting data shape based on the project specification,
+not a confirmed backend API response. Adjust it to the schema agreed
+with the backend team.
+
+Before connecting the frontend, confirm:
+
+Findings list and individual finding endpoints
+
+Dashboard statistics and severity aggregation endpoints
+
+Timeline filtering and pagination behaviour
+
+Alert settings read/update endpoints
+
+Report export strategy
+
+Authentication token requirements and API authorization rules
+
+Standard error response format
+
+See BACKEND_INTEGRATION.md if it exists in the repository for the
+implementation-specific integration contract.
+
+Infrastructure & CI/CD
+
+Terraform and GitHub Actions are intended to support repeatable
+infrastructure management and automated quality checks.
+
+A recommended workflow is:
+
+Install dependencies using the committed lockfile.
+
+Run linting and TypeScript checks.
+
+Run automated tests.
+
+Generate a production build.
+
+Validate Terraform formatting and configuration.
+
+Deploy only through an explicitly configured and authorized
+deployment workflow.
+
+Infrastructure deployment must use the team's approved Azure
+subscription, resource naming, state management, permissions, and
+authentication method. Prefer federated/OIDC authentication for GitHub
+Actions where supported by the environment.
+
+No infrastructure should be applied or destroyed automatically as part
+of a local setup step. Review Terraform plans and obtain the required
+team approval before provisioning or changing Azure resources.
+
+Security Considerations
+
+Do not commit .env files, credentials, access tokens, or private
+keys.
+
+Keep secrets in an approved secret manager or CI/CD secret store.
+
+Do not expose privileged credentials in frontend code.
+
+Validate and handle API responses safely.
+
+Enforce authorization on the backend; hiding a frontend control is
+not access control.
+
+Use HTTPS for deployed application and API traffic.
+
+Configure Entra ID redirect URIs and allowed origins for the correct
+environments.
+
+Apply least-privilege access to Azure resources and deployment
+identities.
+
+Review Terraform changes before applying them.
+
+Keep dependencies updated and review security advisories.
+
+Current Implementation Status
+
+This README describes the project scope and intended Azure-oriented
+architecture. It does not claim that cloud resources, backend
+endpoints, authentication, alert delivery, or production deployment are
+already operational.
+
+Update this section as the team completes and verifies each component:
+
+Frontend pages and responsive layouts
+
+Microsoft Entra ID authentication
+
+Live backend API integration
+
+Real findings and dashboard statistics
+
+Timeline filtering and incident details
+
+Alert settings integration
+
+CSV/PDF report generation
+
+Azure infrastructure provisioned and validated
+
+GitHub Actions checks
+
+Authorized deployment to the selected Azure hosting service
+
+End-to-end testing with real cloud events
+
+Team Responsibilities
+
+The project is developed collaboratively. The frontend/DevOps workstream
+covers the dashboard, identity integration, API consumption,
+infrastructure automation, and CI/CD coordination. Backend event
+collection, detection, persistence, and alerting must follow the
+responsibilities and interfaces agreed by the team.
+
+Coordinate API schemas, Azure resource ownership, environment
+configuration, and deployment permissions before merging cross-team
+integration changes.
+
+Contributing
+
+Create a feature branch for your change.
+
+Keep changes focused and consistent with the existing project
+structure.
+
+Update types and documentation when API contracts change.
+
+Run the available lint, type-check, test, and build commands.
+
+Open a pull request with a clear summary and testing notes.
+
+Do not commit secrets, local environment files, or generated
+credentials.
+
+License
+
+Add the project's selected license here before public distribution.
