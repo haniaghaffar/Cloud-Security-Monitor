@@ -1,357 +1,501 @@
 # Cloud Security Monitor
 
 <p align="center">
-  <strong>A Cloud-Native Security Monitoring & Threat Detection Platform</strong><br />
-  Monitor cloud activity, detect suspicious behaviour, and investigate security incidents through a centralized dashboard.
+  <strong>Azure-Based Cloud Security Monitoring & Threat Detection Platform</strong>
+  <br />
+  Monitor cloud activity, detect suspicious behaviour, investigate security incidents, and manage security findings through a centralized dashboard.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Cloud-Microsoft%20Azure-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white" />
   <img src="https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
   <img src="https://img.shields.io/badge/Language-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Backend-Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/Functions-Azure%20Functions-0062AD?style=for-the-badge&logo=azurefunctions&logoColor=white" />
   <img src="https://img.shields.io/badge/Styling-Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
-  <img src="https://img.shields.io/badge/IaC-Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" />
 </p>
 
 ---
 
 ## Overview
 
-**Cloud Security Monitor** is a cloud security monitoring solution designed to help teams gain visibility into cloud activity, identify potentially malicious behaviour, and investigate security incidents through a centralized dashboard.
+**Cloud Security Monitor** is a cloud security monitoring platform designed to help organizations monitor Azure cloud activity, identify suspicious behaviour, and investigate potential security threats.
 
-The platform follows a detection-and-monitoring workflow:
+The system processes Azure Activity Log data through an automated detection engine and generates structured security findings. These findings are stored in Azure Table Storage and presented through an interactive React dashboard.
 
-1. Collect cloud activity and security logs.
-2. Process events using security detection rules.
-3. Identify suspicious activities and generate security findings.
-4. Assign severity levels to detected threats.
-5. Store findings for investigation and tracking.
-6. Display security insights through an interactive dashboard.
-7. Support alerts and reporting for security monitoring.
+The platform also supports email notifications for High and Critical severity findings through Resend.
 
-The project uses **Microsoft Azure** as its cloud platform.
+The main goal is to provide a centralized security monitoring experience that makes cloud threats easier to detect, understand, track, and investigate.
 
 ## Key Features
 
 ### 1. Security Overview Dashboard
 
-Provides a centralized view of the cloud security posture, including:
+Provides a centralized overview of cloud security activity, including:
 
-* Total monitored events
-* Threats detected today
+* Total security findings
+* Threat activity overview
 * Severity distribution
-* Top risky IP addresses
+* Risk-related statistics
 * Recent security findings
 
-### 2. Threat Timeline
+### 2. Threat Monitoring
 
-Displays security findings chronologically with filtering options:
+Displays detected security events and findings in a structured format.
 
-* Date and time range
-* Severity level
-* Event type
-* Finding status
+Users can review security activity and identify potentially suspicious behaviour.
 
 ### 3. Incident Details
 
-Provides detailed information about individual security incidents:
+Provides detailed information about individual security findings, including:
 
-* Event timestamp
+* Finding ID
+* Timestamp
 * Event type
 * Severity level
 * User or role involved
 * Source IP address
-* Region or country
+* Region information, when available
 * Description of suspicious activity
-* Reason for detection
-* Recommended actions
-* Incident status
+* Finding status
 
-### 4. Alert Settings
+### 4. Alert Management
 
-Provides configuration options for selecting severity levels that should trigger notifications.
+Provides an interface for managing alert-related settings.
 
-### 5. Reports
+The backend sends email notifications through Resend when findings meet the configured High or Critical severity conditions.
 
-Supports security reporting with CSV and PDF export functionality.
+### 5. Reports & Export
 
-### 6. Authentication
+Allows users to export security reports in:
 
-Designed to integrate with **Microsoft Entra ID** for secure user authentication.
+* CSV format
+* PDF format
 
-## Threat Detection Scenarios
+### 6. Resource Monitoring
 
-The system is designed to identify suspicious cloud activities, including:
+Includes a resource inventory interface for cloud resource visibility.
 
-| Detection Scenario       | Description                                                    |
-| ------------------------ | -------------------------------------------------------------- |
-| Repeated Failed Logins   | Detects multiple unsuccessful authentication attempts.         |
-| Unusual Login Region     | Identifies access from unexpected geographical locations.      |
-| Privileged Account Usage | Monitors potentially risky use of privileged accounts.         |
-| IAM / Role Changes       | Detects unexpected permission changes or privilege escalation. |
-| Public Security Group    | Identifies security rules exposed to `0.0.0.0/0`.              |
-| Public Storage Access    | Detects potentially unintended public storage exposure.        |
-| Logging Disabled         | Identifies attempts to disable or modify security logging.     |
+Live resource inventory API availability is not yet confirmed; the interface should communicate unavailable data rather than present fabricated resource information.
+
+### 7. Settings
+
+Provides a centralized interface for application configuration and available settings.
+
+### 8. Authentication Interface
+
+Includes a login interface.
+
+Microsoft Entra ID integration is part of the intended authentication direction, but backend token validation and complete secure authentication are not yet implemented.
+
+---
+
+## Threat Detection Engine
+
+The backend processes Azure Activity Log files and evaluates events using seven detection rules.
+
+The supported detection scenarios include:
+
+| # | Detection Scenario          | Description                                                                |
+| - | --------------------------- | -------------------------------------------------------------------------- |
+| 1 | Repeated Failed Logins      | Identifies repeated unsuccessful authentication attempts.                  |
+| 2 | Unusual Region Login        | Detects potentially suspicious access from unusual geographical locations. |
+| 3 | Public Storage Access       | Identifies potentially exposed storage resources.                          |
+| 4 | Public Security Group       | Detects security group exposure to the public internet.                    |
+| 5 | Logging Disabled            | Identifies attempts to disable or modify security logging.                 |
+| 6 | Privileged Account Activity | Monitors potentially risky privileged account usage.                       |
+| 7 | IAM / Permission Changes    | Identifies suspicious permission or access changes.                        |
+
+*Detection rule names and conditions should follow the actual backend implementation.*
 
 ## Severity Levels
 
+Each security finding is assigned a severity level to help prioritize investigation.
+
 | Severity | Description                                       |
 | -------- | ------------------------------------------------- |
-| Critical | Requires immediate investigation and response.    |
+| Critical | Immediate investigation is required.              |
 | High     | Represents a significant security risk.           |
-| Medium   | Suspicious activity requiring investigation.      |
+| Medium   | Suspicious activity requiring review.             |
 | Low      | Lower-priority activity that should be monitored. |
+
+---
 
 ## System Architecture
 
-The project follows an Azure-oriented architecture designed to collect, process, analyze, and present cloud security events.
+The project follows an Azure-oriented architecture in which cloud activity is processed by an automated backend detection engine.
 
 ```text
-        Cloud Activity & Logs
-                 |
-                 v
-          Azure Log Sources
-                 |
-                 v
-       Processing & Detection
-          Azure Functions
-                 |
-                 v
-          Findings Storage
-           Azure Cosmos DB
-                 |
-                 v
-           Backend API
-                 |
-                 v
-       React Security Dashboard
-                 |
-                 v
-        Microsoft Entra ID
-
-          Alert Notifications
-          Azure Alert Services
+             Azure Activity Logs
+                      |
+                      v
+              Activity Log Files
+                      |
+                      v
+               Azure Functions
+                      |
+                      v
+              Detection Engine
+                (7 Rules)
+                      |
+                      v
+              Security Findings
+                      |
+                      v
+              Azure Table Storage
+                      |
+                      v
+                 Backend API
+                      |
+                      v
+              React Dashboard
+                      |
+              +-------+-------+
+              |               |
+              v               v
+         CSV / PDF       Security Alerts
+          Reports         via Resend
 ```
 
-### Azure Technology Mapping
+### Architecture Components
 
-| Component                 | Azure Technology     |
-| ------------------------- | -------------------- |
-| Activity Monitoring       | Azure Activity Logs  |
-| Log Storage               | Azure Blob Storage   |
-| Event Processing          | Azure Functions      |
-| Findings Storage          | Azure Cosmos DB      |
-| API Management            | Azure API Management |
-| Authentication            | Microsoft Entra ID   |
-| Infrastructure Automation | Terraform            |
-| CI/CD                     | GitHub Actions       |
+| Component             | Technology          | Responsibility                              |
+| --------------------- | ------------------- | ------------------------------------------- |
+| Cloud Activity Source | Azure Activity Logs | Provides cloud activity information.        |
+| Event Processing      | Azure Functions     | Processes activity log files.               |
+| Detection Engine      | Python              | Evaluates events against detection rules.   |
+| Findings Storage      | Azure Table Storage | Stores generated security findings.         |
+| Email Notifications   | Resend              | Sends High and Critical finding alerts.     |
+| Frontend              | React               | Displays security information and findings. |
+| API Communication     | REST API            | Connects frontend with backend services.    |
 
-*Note: Final Azure service selection and deployment depend on the team's implemented architecture.*
+---
 
 ## Technology Stack
 
-| Category               | Technology                |
-| ---------------------- | ------------------------- |
-| Frontend               | React                     |
-| Programming Language   | TypeScript                |
-| Build Tool             | Vite                      |
-| Styling                | Tailwind CSS              |
-| Authentication         | Microsoft Entra ID / MSAL |
-| Cloud Platform         | Microsoft Azure           |
-| Infrastructure as Code | Terraform                 |
-| CI/CD                  | GitHub Actions            |
-| Backend Communication  | REST API                  |
+### Frontend
+
+| Technology   | Purpose                                |
+| ------------ | -------------------------------------- |
+| React        | Component-based user interface         |
+| TypeScript   | Type-safe development                  |
+| Vite         | Frontend development and build tooling |
+| Tailwind CSS | Responsive UI styling                  |
+
+### Backend
+
+| Technology          | Purpose                     |
+| ------------------- | --------------------------- |
+| Python              | Backend development         |
+| Azure Functions     | Serverless event processing |
+| Azure Activity Logs | Cloud activity monitoring   |
+| Azure Table Storage | Security findings storage   |
+| Resend              | Email notifications         |
+
+### Infrastructure & DevOps
+
+| Technology      | Purpose                   |
+| --------------- | ------------------------- |
+| Microsoft Azure | Cloud platform            |
+| Terraform       | Infrastructure as Code    |
+| GitHub Actions  | Intended CI/CD automation |
+
+*Terraform configuration exists in the repository. Actual infrastructure provisioning and GitHub Actions deployment should be verified separately.*
+
+---
 
 ## Project Structure
 
+The repository is organized into frontend, backend, infrastructure, and documentation components.
+
 ```text
-cloud-security-monitor/
+Cloud-Security-Monitor/
+│
+├── backend/
+│   ├── requirements.txt
+│   └── README.md
+│
+├── docs/
+│   └── BACKEND_INTEGRATION.md
+│
+├── terraform/
+│
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── services/
+│   ├── hooks/
+│   ├── types/
+│   └── utils/
 │
 ├── public/
 │
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── pages/
-│   │   ├── Login/
-│   │   ├── Overview/
-│   │   ├── ThreatTimeline/
-│   │   ├── IncidentDetails/
-│   │   ├── AlertSettings/
-│   │   └── Reports/
-│   │
-│   ├── services/
-│   │   ├── api/
-│   │   └── auth/
-│   │
-│   ├── hooks/
-│   ├── types/
-│   ├── utils/
-│   ├── App.tsx
-│   └── main.tsx
-│
-├── infrastructure/
-│   └── terraform/
-│
-├── .github/
-│   └── workflows/
-│
-├── .env.example
 ├── package.json
-└── README.md
+├── README.md
+└── ...
 ```
 
-*The actual repository structure may differ.*
+*This is a high-level representation. Refer to the actual repository for the complete directory structure.*
+
+---
 
 ## Getting Started
 
+Follow the instructions below to set up the project locally.
+
 ### Prerequisites
 
-Make sure you have installed:
+Make sure the following tools are installed:
 
 * Node.js
 * npm
+* Python
 * Git
-* Access to the configured backend API
-* Microsoft Entra ID application configuration (for authentication)
+* Azure Functions Core Tools (for local backend execution)
+* Access to the required Azure resources and configuration
 
 ### 1. Clone the Repository
 
 ```bash
 git clone <YOUR_REPOSITORY_URL>
-cd cloud-security-monitor
+cd Cloud-Security-Monitor
 ```
 
-### 2. Install Dependencies
+### 2. Frontend Setup
+
+Install frontend dependencies:
 
 ```bash
 npm install
 ```
 
-### 3. Configure Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-VITE_API_BASE_URL=
-VITE_AUTH_CLIENT_ID=
-VITE_AUTH_TENANT_ID=
-```
-
-| Variable              | Purpose                           |
-| --------------------- | --------------------------------- |
-| `VITE_API_BASE_URL`   | Backend API base URL              |
-| `VITE_AUTH_CLIENT_ID` | Microsoft Entra ID application ID |
-| `VITE_AUTH_TENANT_ID` | Microsoft Entra ID tenant ID      |
-
-**Security Note:** Never store client secrets, passwords, private keys, or other confidential credentials in frontend environment variables.
-
-### 4. Run the Development Server
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Open the local URL provided by Vite.
+Open the local URL displayed in the terminal.
 
-### 5. Build for Production
+### 3. Build Frontend
+
+To generate the production build:
 
 ```bash
 npm run build
 ```
 
-## Backend Integration
+### 4. Backend Setup
 
-The frontend communicates with the backend through a centralized API service layer.
+Navigate to the backend directory:
 
-The expected security finding structure includes:
-
-```ts
-interface SecurityFinding {
-  finding_id: string;
-  timestamp: string;
-  event_type: string;
-  severity: "low" | "medium" | "high" | "critical";
-  user_or_role: string;
-  source_ip: string;
-  region?: string;
-  country?: string;
-  description: string;
-  status: "open" | "reviewed" | "resolved";
-}
+```bash
+cd backend
 ```
 
-The final API endpoints, authentication requirements, and response structures must follow the contract agreed upon by the frontend and backend teams.
+Create a Python virtual environment:
 
-## Infrastructure & CI/CD
+```bash
+python -m venv .venv
+```
 
-The DevOps workflow is designed around:
+Activate the environment.
 
-* Terraform for infrastructure as code.
-* Azure resources for cloud deployment.
-* GitHub Actions for automated workflows.
-* Automated linting and TypeScript validation.
-* Production build verification.
-* Infrastructure formatting and validation.
-* Controlled deployment workflows.
+**Windows:**
 
-Infrastructure changes should be reviewed before applying them to the Azure environment.
+```bash
+.venv\Scripts\activate
+```
 
-## Security Considerations
+**Linux / macOS:**
 
-* Secure authentication through Microsoft Entra ID.
-* Environment-based configuration.
-* No hardcoded credentials or secrets.
-* HTTPS communication.
-* Secure API integration.
-* Backend-side authorization and validation.
-* Least-privilege access to cloud resources.
-* Terraform configuration review.
-* Dependency security checks.
+```bash
+source .venv/bin/activate
+```
 
-## Project Status
+Install backend dependencies:
 
-Implementation and integration status should be updated as each component is completed and verified.
+```bash
+pip install -r requirements.txt
+```
 
-* [ ] Frontend Dashboard
-* [ ] Threat Timeline
-* [ ] Incident Details
-* [ ] Alert Settings
-* [ ] Reports and Export Functionality
-* [ ] Microsoft Entra ID Authentication
-* [ ] Live Backend API Integration
-* [ ] Azure Infrastructure
-* [ ] Terraform Configuration
-* [ ] GitHub Actions CI/CD
-* [ ] End-to-End Testing
-* [ ] Cloud Deployment
+For local Azure Functions execution, configure the required application settings and local environment according to `backend/README.md`, then run:
+
+```bash
+func start
+```
+
+*Azure Functions Core Tools and the required local configuration must be available before running this command.*
+
+---
+
+## Backend API
+
+The backend exposes API functionality for communicating security findings and dashboard information to the frontend.
+
+The documented API capabilities include:
+
+| API Capability     | Purpose                          |
+| ------------------ | -------------------------------- |
+| Findings List      | Retrieves security findings.     |
+| Finding Details    | Retrieves an individual finding. |
+| Dashboard Overview | Provides dashboard statistics.   |
+| Alert Settings     | Handles alert-related settings.  |
+
+The backend README contains the documented API routes and deployed Azure Function App information.
+
+**API Integration Note:** The exact API paths, response schemas, and frontend integration status must be confirmed against `docs/BACKEND_INTEGRATION.md` and the actual backend implementation. Proposed integration contracts should not be treated as verified production endpoints.
+
+---
+
+## Database & Data Model
+
+Azure Table Storage is used to store generated security findings.
+
+A finding contains information such as:
+
+* Finding identifier
+* Timestamp
+* Event type
+* Severity
+* User or role
+* Source IP address
+* Region information
+* Description
+* Finding status
+
+### Finding Status
+
+| Status   | Meaning                         |
+| -------- | ------------------------------- |
+| Open     | Finding requires investigation. |
+| Reviewed | Finding has been reviewed.      |
+| Resolved | Finding has been addressed.     |
+
+---
+
+## Email Alert System
+
+The backend integrates with **Resend** for email notifications.
+
+When a finding meets the configured High or Critical severity conditions, the backend sends an email notification.
+
+This helps ensure that important security events receive attention without requiring users to continuously monitor the dashboard.
+
+---
+
+## Authentication & Security
+
+The project includes a login interface and is intended to support Microsoft Entra ID authentication.
+
+However, the current backend API is documented as operating in **anonymous demo mode**.
+
+Complete Entra ID token validation and secure backend authorization are not yet implemented.
+
+### Security Considerations
+
+* Do not expose API keys or credentials in frontend code.
+* Keep sensitive configuration outside the source code.
+* Use secure environment variables.
+* Validate incoming API requests.
+* Implement backend-side authentication and authorization.
+* Use HTTPS for deployed application traffic.
+* Apply least-privilege access to Azure resources.
+* Review infrastructure changes before deployment.
+
+**Important:** A frontend login interface alone does not provide backend security. API authentication and authorization must be enforced by the backend.
+
+---
+
+## Infrastructure & Deployment
+
+The repository includes Terraform configuration for infrastructure management.
+
+Terraform is intended to support repeatable Azure infrastructure provisioning.
+
+Before deployment:
+
+1. Configure the correct Azure subscription.
+2. Review the Terraform provider and resource configuration.
+3. Configure the required environment variables and credentials securely.
+4. Validate the Terraform configuration.
+5. Review the execution plan.
+6. Apply infrastructure changes only after approval.
+
+GitHub Actions is intended for automated validation and deployment workflows. Actual workflow implementation and deployment status should be confirmed in the repository.
+
+---
+
+## Current Implementation Status
+
+| Component                              | Status         |
+| -------------------------------------- | -------------- |
+| React Frontend                         | Implemented    |
+| Dashboard Pages                        | Implemented    |
+| Backend Azure Functions                | Implemented    |
+| Activity Log Processing                | Implemented    |
+| Threat Detection Rules                 | Implemented    |
+| Azure Table Storage Integration        | Implemented    |
+| Resend Email Alerts                    | Implemented    |
+| Findings API                           | Documented     |
+| CSV / PDF Export Interface             | Implemented    |
+| Resource Inventory API                 | Not confirmed  |
+| Entra ID Token Validation              | Pending        |
+| Secure API Authorization               | Pending        |
+| Complete Frontend-Backend Verification | To be verified |
+| Terraform Deployment                   | To be verified |
+| GitHub Actions CI/CD                   | To be verified |
+
+*Status reflects the available project documentation and implementation review. It should be updated after end-to-end testing.*
+
+---
+
+## Future Improvements
+
+Potential improvements include:
+
+* Complete Microsoft Entra ID authentication and backend token validation.
+* Implement secure API authorization.
+* Complete and verify frontend-backend integration.
+* Expand cloud resource inventory capabilities.
+* Improve threat detection rules.
+* Add advanced anomaly detection.
+* Introduce automated incident response.
+* Add additional notification channels.
+* Complete automated CI/CD deployment.
+* Improve security analytics and reporting.
+
+---
 
 ## Team Responsibilities
 
-The project is developed collaboratively.
+Cloud Security Monitor is a collaborative software engineering project.
 
-The frontend and DevOps workstream focuses on:
+The project work includes:
 
-* React dashboard development.
-* UI components and responsive layouts.
-* Backend API integration.
-* Microsoft Entra ID authentication.
+* Frontend development and dashboard design.
+* Backend development and event processing.
+* Cloud security monitoring.
+* Threat detection and findings management.
+* API integration.
 * Azure infrastructure configuration.
-* Terraform automation.
-* GitHub Actions CI/CD.
-* Frontend testing and documentation.
+* Testing, documentation, and deployment coordination.
 
-Backend event collection, threat detection, data storage, and alert processing are coordinated with the backend workstream.
+---
 
 ## Contributing
 
 Contributions are welcome.
 
-1. Create a feature branch.
-2. Implement your changes.
-3. Follow the existing project structure.
-4. Test your changes locally.
+1. Fork the repository.
+2. Create a feature branch.
+3. Implement your changes.
+4. Test the implementation.
 5. Submit a pull request with a clear description.
+
+Please avoid committing credentials, API keys, local environment files, or other sensitive information.
+
+---
 
 ## License
 
