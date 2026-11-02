@@ -1,6 +1,5 @@
 import {
   AccountInfo,
-  AuthenticationResult,
   InteractionRequiredAuthError,
   PublicClientApplication,
 } from '@azure/msal-browser';
@@ -84,12 +83,18 @@ export const authService = {
       throw new Error('Microsoft Entra ID could not be initialized.');
     }
 
-    const response: AuthenticationResult = await instance.loginPopup(loginRequest);
-    if (!response.account) {
-      throw new Error('Microsoft Entra ID did not return an authenticated account.');
-    }
-    instance.setActiveAccount(response.account);
-    return this.mapAccountToUserProfile(response.account);
+    // Redirect flow (not popup): loginPopup breaks with this app
+    // because the popup lands on the full app, whose boot calls
+    // handleRedirectPromise with the popup's own empty cache and
+    // throws no_token_request_cache_error. With a redirect, the
+    // same tab leaves for Microsoft and returns with the code, so
+    // the boot-time handleRedirectPromise finds its cached request
+    // intact and the account is picked up on reload.
+    await instance.loginRedirect(loginRequest);
+    // loginRedirect navigates away from this page, so execution
+    // never continues past this point. This throw only satisfies
+    // the return type if the redirect ever returns instead.
+    throw new Error('Microsoft Entra ID sign-in redirect did not start.');
   },
 
   async signOut(): Promise<void> {
