@@ -1,0 +1,169 @@
+{
+  "records": [
+    {
+      "eventTimestamp": "2026-10-24T10:00:00Z",
+      "caller": "root",
+      "operationName": {
+        "value": "Microsoft.Authorization/roleAssignments/write",
+        "localizedValue": "Microsoft.Authorization/roleAssignments/write"
+      },
+      "status": {
+        "value": "Succeeded"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "203.0.113.10",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:05:00Z",
+      "caller": "admin@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.Authorization/roleAssignments/write",
+        "localizedValue": "Microsoft.Authorization/roleAssignments/write"
+      },
+      "status": {
+        "value": "Succeeded"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "203.0.113.11",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:10:00Z",
+      "caller": "admin@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.Insights/diagnosticSettings/delete",
+        "localizedValue": "Microsoft.Insights/diagnosticSettings/delete"
+      },
+      "status": {
+        "value": "Succeeded"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "203.0.113.11",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:10:00Z",
+      "caller": "attacker.test@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.AzureActiveDirectory/signins",
+        "localizedValue": "Microsoft.AzureActiveDirectory/signins"
+      },
+      "status": {
+        "value": "Failed"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "198.51.100.7",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:11:00Z",
+      "caller": "attacker.test@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.AzureActiveDirectory/signins",
+        "localizedValue": "Microsoft.AzureActiveDirectory/signins"
+      },
+      "status": {
+        "value": "Failed"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "198.51.100.7",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:12:00Z",
+      "caller": "attacker.test@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.AzureActiveDirectory/signins",
+        "localizedValue": "Microsoft.AzureActiveDirectory/signins"
+      },
+      "status": {
+        "value": "Failed"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "198.51.100.7",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:13:00Z",
+      "caller": "attacker.test@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.AzureActiveDirectory/signins",
+        "localizedValue": "Microsoft.AzureActiveDirectory/signins"
+      },
+      "status": {
+        "value": "Failed"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "198.51.100.7",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:14:00Z",
+      "caller": "attacker.test@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.AzureActiveDirectory/signins",
+        "localizedValue": "Microsoft.AzureActiveDirectory/signins"
+      },
+      "status": {
+        "value": "Failed"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "198.51.100.7",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:20:00Z",
+      "caller": "demo.user@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.AzureActiveDirectory/signins",
+        "localizedValue": "Microsoft.AzureActiveDirectory/signins"
+      },
+      "status": {
+        "value": "Succeeded"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "203.0.113.20",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:25:00Z",
+      "caller": "demo.user@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.AzureActiveDirectory/signins",
+        "localizedValue": "Microsoft.AzureActiveDirectory/signins"
+      },
+      "status": {
+        "value": "Succeeded"
+      },
+      "location": "UKSouth",
+      "callerIpAddress": "203.0.113.21",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    },
+    {
+      "eventTimestamp": "2026-10-24T10:30:00Z",
+      "caller": "normal.user@demo.onmicrosoft.com",
+      "operationName": {
+        "value": "Microsoft.AzureActiveDirectory/signins",
+        "localizedValue": "Microsoft.AzureActiveDirectory/signins"
+      },
+      "status": {
+        "value": "Succeeded"
+      },
+      "location": "UAENorth",
+      "callerIpAddress": "203.0.113.30",
+      "correlationId": "csm-demo-001",
+      "resourceId": "/subscriptions/demo/resourceGroups/csm-rg"
+    }
+  ]
+}
