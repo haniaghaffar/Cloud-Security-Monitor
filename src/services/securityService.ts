@@ -1,9 +1,11 @@
 import {
   AlertPreferences,
+  AzureResource,
   DashboardStatsResponse,
   FindingFilterOptions,
   FindingStatus,
   PaginatedResult,
+  ResourcesResponse,
   RiskyIpSummary,
   SecurityFinding,
   SecurityMetrics,
@@ -320,6 +322,22 @@ function requestParams(filters: FindingFilterOptions): Record<string, string | n
   return params;
 }
 
+export function parseResourcesResponse(value: unknown): ResourcesResponse {
+  if (!isRecord(value)) return invalidResponse('resources response');
+  if (!Array.isArray(value.data)) return invalidResponse('resources data');
+  const data: AzureResource[] = value.data.map((entry) => {
+    if (!isRecord(entry)) return invalidResponse('resource entry');
+    return {
+      id: requiredString(entry, ['id'], 'resource id'),
+      name: requiredString(entry, ['name'], 'resource name'),
+      type: optionalString(entry, ['type']) ?? '',
+      location: optionalString(entry, ['location']) ?? '',
+      resourceGroup: optionalString(entry, ['resourceGroup']) ?? '',
+    };
+  });
+  return { data, total: nonNegativeInteger(value, 'total') };
+}
+
 export const securityService: SecurityServiceInterface = {
   async getFindings(
     filters: FindingFilterOptions = {},
@@ -360,6 +378,12 @@ export const securityService: SecurityServiceInterface = {
     ensureApiConfigured();
     const response = await apiClient.put<unknown>('/alerts/settings', settings);
     return parseAlertPreferences(response.data);
+  },
+
+  async getResources(signal?: AbortSignal): Promise<ResourcesResponse> {
+    ensureApiConfigured();
+    const response = await apiClient.get<unknown>('/resources', { signal });
+    return parseResourcesResponse(response.data);
   },
 
   async getReportData(

@@ -21,6 +21,25 @@ export interface DashboardStatsResponse {
   recentFindings: SecurityFinding[];
 }
 
+/**
+ * One Azure resource as returned by GET /api/resources. The backend
+ * reports exactly what Azure Resource Manager returns (id, name,
+ * type, location, resource group). ARM's resource list carries no
+ * health or connection status, so none is included here.
+ */
+export interface AzureResource {
+  id: string;
+  name: string;
+  type: string;
+  location: string;
+  resourceGroup: string;
+}
+
+export interface ResourcesResponse {
+  data: AzureResource[];
+  total: number;
+}
+
 export interface SecurityServiceInterface {
   getFindings(filters?: FindingFilterOptions, signal?: AbortSignal): Promise<PaginatedResult<SecurityFinding>>;
   getFindingById(id: string, signal?: AbortSignal): Promise<SecurityFinding | null>;
@@ -28,4 +47,5 @@ export interface SecurityServiceInterface {
   getAlertSettings(signal?: AbortSignal): Promise<AlertPreferences>;
   updateAlertSettings(settings: AlertPreferences): Promise<AlertPreferences>;
   getReportData(filters?: FindingFilterOptions, signal?: AbortSignal): Promise<SecurityFinding[]>;
+  getResources(signal?: AbortSignal): Promise<ResourcesResponse>;
 }
