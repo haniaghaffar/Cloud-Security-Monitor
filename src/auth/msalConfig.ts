@@ -31,9 +31,12 @@ export const isEntraIdConfigured = (): boolean => {
 export const msalConfig: Configuration = {
   auth: {
     clientId: AUTH_CLIENT_ID || '00000000-0000-0000-0000-000000000000',
-    authority: AUTH_TENANT_ID
-      ? `https://login.microsoftonline.com/${AUTH_TENANT_ID}`
-      : 'https://login.microsoftonline.com/common',
+    // Personal Microsoft accounts only: this app is registered for
+    // Microsoft Account users only, so the tenant-specific endpoint
+    // is rejected by Microsoft (AADSTS9002346) and the /consumers
+    // endpoint must be used instead. VITE_AUTH_TENANT_ID is still
+    // required by isEntraIdConfigured, but it is not used here.
+    authority: 'https://login.microsoftonline.com/consumers',
     redirectUri: AUTH_REDIRECT_URI,
     postLogoutRedirectUri: AUTH_REDIRECT_URI,
   },
