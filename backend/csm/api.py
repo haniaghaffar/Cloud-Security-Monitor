@@ -30,11 +30,12 @@ Scale note: the table is read in full and filtered in Python. That is
 fine for a course demo (10 rows) but must move to OData filters
 before it ever holds a large table.
 
-Auth note: the v1 API is anonymous (auth_level=ANONYMOUS) for the
-demo. The frontend works without Entra login when its VITE_AUTH_*
-variables are unset (its route guard and token logic both no-op).
-Adding Entra token validation + restricted CORS is the hardening
-follow-up; it is NOT done here.
+Auth note: the routes run at auth_level=ANONYMOUS at the Functions
+level, and function_app.py enforces Entra Bearer validation itself
+(see csm/auth.py) whenever ENTRA_TENANT_ID and ENTRA_AUDIENCE are
+set. When those settings are absent the API stays anonymous, so
+the frontend still works with its VITE_AUTH_* variables unset.
+Restricted CORS is still a follow-up (currently * for the demo).
 """
 
 import logging
