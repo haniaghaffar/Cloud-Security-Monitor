@@ -257,7 +257,7 @@ Make sure the following tools are installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
+git clone https://github.com/haniaghaffar/Cloud-Security-Monitor.git
 cd Cloud-Security-Monitor
 ```
 
