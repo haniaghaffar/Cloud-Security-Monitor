@@ -3,6 +3,7 @@ import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { Card } from '../components/common/Card';
 import { AUTH_API_SCOPE, AUTH_CLIENT_ID, AUTH_REDIRECT_URI, AUTH_TENANT_ID, isEntraIdConfigured } from '../auth/msalConfig';
 import { API_BASE_URL } from '../services/apiClient';
+import { BACKEND_HEALTH_LABELS, useBackendHealth } from '../hooks/useBackendHealth';
 
 function ConfigurationValue({ label, value }: { label: string; value: string }) {
   return (
@@ -23,6 +24,7 @@ function ConfigurationValue({ label, value }: { label: string; value: string }) 
 export default function SettingsPage() {
   const entraConfigured = isEntraIdConfigured();
   const apiConfigured = Boolean(API_BASE_URL);
+  const backendHealth = useBackendHealth();
 
   return (
     <div className="space-y-6">
@@ -46,10 +48,10 @@ export default function SettingsPage() {
               <h2 className="text-sm font-bold text-slate-900">Backend API Configuration</h2>
             </div>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold inline-flex items-center gap-1 border bg-slate-50 text-slate-700 border-slate-200">
-              {apiConfigured
+              {backendHealth === 'connected'
                 ? <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
                 : <AlertCircle className="w-3.5 h-3.5" aria-hidden="true" />}
-              {apiConfigured ? 'URL configured; health unverified' : 'Endpoint not configured'}
+              {apiConfigured ? `URL configured; ${BACKEND_HEALTH_LABELS[backendHealth]}` : 'Endpoint not configured'}
             </span>
           </div>
         }
