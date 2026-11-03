@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Menu, Bell, Search, ShieldCheck, LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { BACKEND_HEALTH_LABELS, useBackendHealth } from '../../hooks/useBackendHealth';
 import { Link, useNavigate } from 'react-router-dom';
 
 interface TopNavProps {
@@ -10,6 +11,15 @@ interface TopNavProps {
 
 export function TopNav({ onOpenMobileMenu, isMobileMenuOpen }: TopNavProps) {
   const { user, isAuthenticated, logout } = useAuth();
+  const backendHealth = useBackendHealth();
+  const backendHealthIconColor =
+    backendHealth === 'connected'
+      ? 'text-emerald-600'
+      : backendHealth === 'unreachable'
+        ? 'text-red-600'
+        : backendHealth === 'sign-in-required'
+          ? 'text-amber-600'
+          : 'text-slate-400';
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
 
@@ -64,8 +74,8 @@ export function TopNav({ onOpenMobileMenu, isMobileMenuOpen }: TopNavProps) {
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Live Status Pill */}
         <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-700">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
-          <span>Backend health unverified</span>
+          <ShieldCheck className={`w-3.5 h-3.5 ${backendHealthIconColor}`} aria-hidden="true" />
+          <span>Backend {BACKEND_HEALTH_LABELS[backendHealth]}</span>
         </div>
 
         {/* Notifications Icon Button */}
