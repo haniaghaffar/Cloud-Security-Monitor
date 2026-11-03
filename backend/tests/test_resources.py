@@ -19,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from csm import resources  # noqa: E402
 
 MSI_URL = "http://localhost/msi"
+IDENTITY_URL = "http://localhost/identity"
 ARM_ITEM_STORAGE = {
     "id": "/subscriptions/sub-1/resourceGroups/csm-rg/providers/Microsoft.Storage/storageAccounts/csmstorage583",
     "name": "csmstorage583",
@@ -59,8 +60,8 @@ class ResourcesTestCase(unittest.TestCase):
         self.calls = []
 
         def fake_get(url, params=None, headers=None, timeout=None):
-            self.calls.append(url)
-            if url == MSI_URL:
+            self.calls.append((url, headers or {}))
+            if url in (MSI_URL, IDENTITY_URL):
                 return _FakeResponse({"access_token": "msi-token"})
             return _FakeResponse({"value": [ARM_ITEM_FUNCTION, ARM_ITEM_STORAGE,
                                             ARM_ITEM_SUBSCRIPTION_LEVEL]})
@@ -68,7 +69,8 @@ class ResourcesTestCase(unittest.TestCase):
         self.fake_get = fake_get
 
     def tearDown(self):
-        for key in ("MSI_ENDPOINT", "MSI_SECRET", "AZURE_SUBSCRIPTION_ID"):
+        for key in ("MSI_ENDPOINT", "MSI_SECRET", "AZURE_SUBSCRIPTION_ID",
+                    "IDENTITY_ENDPOINT", "IDENTITY_HEADER"):
             os.environ.pop(key, None)
 
     def test_list_resources_maps_and_sorts(self):
@@ -82,7 +84,7 @@ class ResourcesTestCase(unittest.TestCase):
         self.assertEqual(storage["location"], "UAENorth")
         self.assertEqual(result["data"][0]["resourceGroup"], "")
         # The MSI token call went to the MSI endpoint, ARM got a Bearer.
-        self.assertIn(MSI_URL, self.calls)
+        self.assertIn(MSI_URL, [url for url, _ in self.calls])
 
     def test_missing_subscription_id_raises(self):
         os.environ.pop("AZURE_SUBSCRIPTION_ID", None)
@@ -92,6 +94,32 @@ class ResourcesTestCase(unittest.TestCase):
     def test_missing_msi_env_raises(self):
         os.environ.pop("MSI_ENDPOINT", None)
         os.environ.pop("MSI_SECRET", None)
+        with self.assertRaises(RuntimeError):
+            resources.list_resources(http_get=self.fake_get)
+
+    def test_identity_endpoint_preferred_over_msi(self):
+        os.environ["IDENTITY_ENDPOINT"] = IDENTITY_URL
+        os.environ["IDENTITY_HEADER"] = "host-header"
+        result = resources.list_resources(http_get=self.fake_get)
+        self.assertEqual(result["total"], 3)
+        token_calls = [(url, headers) for url, headers in self.calls
+                       if url in (MSI_URL, IDENTITY_URL)]
+        self.assertEqual(len(token_calls), 1)
+        self.assertEqual(token_calls[0][0], IDENTITY_URL)
+        self.assertEqual(token_calls[0][1].get("X-IDENTITY-HEADER"), "host-header")
+
+    def test_identity_endpoint_used_when_msi_absent(self):
+        os.environ.pop("MSI_ENDPOINT", None)
+        os.environ.pop("MSI_SECRET", None)
+        os.environ["IDENTITY_ENDPOINT"] = IDENTITY_URL
+        os.environ["IDENTITY_HEADER"] = "host-header"
+        result = resources.list_resources(http_get=self.fake_get)
+        self.assertEqual(result["total"], 3)
+
+    def test_neither_identity_nor_msi_raises(self):
+        for key in ("MSI_ENDPOINT", "MSI_SECRET",
+                    "IDENTITY_ENDPOINT", "IDENTITY_HEADER"):
+            os.environ.pop(key, None)
         with self.assertRaises(RuntimeError):
             resources.list_resources(http_get=self.fake_get)
 
