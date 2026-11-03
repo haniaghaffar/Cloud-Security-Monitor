@@ -1,9 +1,16 @@
 """Azure Resource Manager inventory via the Function App's identity.
 
 No secrets are stored for this: the app authenticates with its
-system-assigned managed identity (MSI_ENDPOINT/MSI_SECRET are
-provided by the Azure platform at runtime), which holds Reader on
-the subscription, then lists resources from the ARM API.
+system-assigned managed identity, which holds Reader on the
+subscription, then lists resources from the ARM API.
+
+Token acquisition tries the Functions host identity endpoint
+first (IDENTITY_ENDPOINT + X-IDENTITY-HEADER, issued by the
+Functions host itself) and falls back to the legacy App Service
+MSI endpoint (MSI_ENDPOINT/MSI_SECRET). The legacy path returned
+a persistent 403 on this app even after an identity toggle and
+restarts (Nov 2026), so the host path is preferred; the fallback
+keeps older environments working.
 
 Only real ARM data is returned. The frontend Resources page must
 not invent names, identifiers, or statuses, so this module reports
@@ -11,8 +18,9 @@ exactly what ARM returns (id, name, type, location, resource
 group) and nothing else. ARM's resource list carries no health or
 connection status, so no status field is fabricated here.
 
-Outside Azure (local runs, tests) MSI_ENDPOINT is absent and this
-module raises a clear RuntimeError instead of returning fake data.
+Outside Azure (local runs, tests) both endpoint pairs are absent
+and this module raises a clear RuntimeError instead of returning
+fake data.
 """
 
 import os
@@ -26,12 +34,32 @@ ARM_RESOURCE = "https://management.azure.com/"
 
 
 def get_managed_identity_token(http_get: Any = requests.get) -> str:
-    """Fetch an ARM access token from the platform MSI endpoint."""
+    """Fetch an ARM access token for the app's managed identity.
+
+    Preferred path: the Functions host identity endpoint
+    (IDENTITY_ENDPOINT + X-IDENTITY-HEADER). Fallback: the legacy
+    App Service MSI endpoint (MSI_ENDPOINT + secret header).
+    """
+    identity_endpoint = os.environ.get("IDENTITY_ENDPOINT")
+    identity_header = os.environ.get("IDENTITY_HEADER")
+    if identity_endpoint and identity_header:
+        resp = http_get(
+            identity_endpoint,
+            params={"resource": ARM_RESOURCE, "api-version": MSI_API_VERSION},
+            headers={"X-IDENTITY-HEADER": identity_header},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        token = resp.json().get("access_token")
+        if not token:
+            raise RuntimeError("managed identity returned no access token")
+        return token
     endpoint = os.environ.get("MSI_ENDPOINT")
     secret = os.environ.get("MSI_SECRET")
     if not endpoint or not secret:
         raise RuntimeError(
-            "managed identity is not available (MSI_ENDPOINT/MSI_SECRET not set)"
+            "managed identity is not available "
+            "(no IDENTITY_ENDPOINT/IDENTITY_HEADER and no MSI_ENDPOINT/MSI_SECRET)"
         )
     resp = http_get(
         endpoint,
