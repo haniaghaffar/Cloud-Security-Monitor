@@ -17,9 +17,11 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/common/Button';
 import { API_BASE_URL } from '../services/apiClient';
 import { authService } from '../services/authService';
+import { BACKEND_HEALTH_LABELS, useBackendHealth } from '../hooks/useBackendHealth';
 
 export default function DashboardPage() {
   const { stats, isLoading, error, refetch } = useDashboardStats();
+  const backendHealth = useBackendHealth();
 
   if (isLoading && !stats) {
     return (
@@ -162,7 +164,7 @@ export default function DashboardPage() {
             header={
               <div>
                 <h2 className="text-sm font-bold text-slate-900">Integration Configuration</h2>
-                <p className="text-xs text-slate-500 mt-0.5">Configuration status only; service health is not reported</p>
+                <p className="text-xs text-slate-500 mt-0.5">Configuration and live service health</p>
               </div>
             }
           >
@@ -170,7 +172,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
                 <span className="text-slate-600">Backend API endpoint</span>
                 <span className="font-semibold text-slate-800">
-                  {API_BASE_URL ? 'Configured; health unverified' : 'Not configured'}
+                  {API_BASE_URL ? `Configured; ${BACKEND_HEALTH_LABELS[backendHealth]}` : 'Not configured'}
                 </span>
               </div>
 
