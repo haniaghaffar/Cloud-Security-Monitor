@@ -47,7 +47,7 @@ Finding fields: `finding_id`, `timestamp`, `event_type`, `severity`
 (Critical/High/Medium/Low), `user_or_role`, `source_ip`, `region`,
 `description`, `status` (open/reviewed/resolved).
 
-## Current status and known limits (verified 2 Nov 2026)
+## Current status and known limits (verified 2–3 Nov 2026)
 
 - **Auth is live (v6, deployed 2 Nov 2026 ~17:35 PKT):** the API
   validates Entra ID JWTs (RS256, JWKS from the common endpoint,
@@ -62,17 +62,27 @@ Finding fields: `finding_id`, `timestamp`, `event_type`, `severity`
   24 Oct 2026). 4 more arrived 2 Nov 2026 11:12Z from real Activity
   Log exports (IAMPolicyChange/High) — live log flow is now proven
   by recent rows, not just by the trigger executing.
-- **Azure Resources page:** `GET /api/resources` is live and the
-  dashboard's Azure Resources page reads it. Rows come from ARM via
-  the Function App's system-assigned managed identity (Reader role
-  on the subscription); no status is asserted, because ARM reports
-  none.
+- **Azure Resources page (fixed in v7, deployed 3 Nov 2026 ~15:49 PKT):**
+  `GET /api/resources` serves the live inventory and the dashboard's
+  Azure Resources page shows it (6 resources verified 3 Nov 2026:
+  csm-insights583, csmstorage583, UAENorthLinuxDynamicPlan,
+  csmfunc583, Application Insights Smart Detection,
+  managed-csm-insights583-ws). Rows come from ARM via the Function
+  App's system-assigned managed identity (Reader role on the
+  subscription); no status is asserted, because ARM reports none.
+  Note: the legacy MSI endpoint (MSI_ENDPOINT/MSI_SECRET) returned
+  a persistent 403 even after an identity toggle and restarts, so
+  v7 takes its ARM token from the Functions host identity endpoint
+  first (IDENTITY_ENDPOINT + X-IDENTITY-HEADER), with the MSI path
+  as fallback. The identity was re-created during diagnosis (new
+  principal 227e4e94-ae49-4fc9-9023-3cded855a5b6) with Reader
+  re-assigned.
 - **Email alerts:** delivery was proven live on 27 Oct 2026 — 4 alerts
   arrived for the High/Critical findings of the end-to-end run and
   none for Medium, by design. Alert settings can be read via the API;
   they were not changed during verification.
-- **Tests:** 46 tests pass (emailer, API, auth incl. a
-  /consumers-issuer case, resources). Ingestion tests that need a
+- **Tests:** 49 tests pass (emailer, API, auth incl. a
+  /consumers-issuer case, resources incl. identity-endpoint cases). Ingestion tests that need a
   fixture use `sample-activity-log.json` in this folder (the same
   5,544-byte file used in the 25 Oct end-to-end test); without it
   those tests skip.
@@ -86,8 +96,9 @@ Finding fields: `finding_id`, `timestamp`, `event_type`, `severity`
 - `csm/emailer.py` — Resend email alerts.
 - `csm/api.py` — findings mapping, filters, stats, alert settings.
 - `csm/auth.py` — Entra JWT validation (RS256, no new dependencies).
-- `csm/resources.py` — Azure resource inventory via MSI + ARM.
-- `tests/` — 46 tests (emailer, API, auth, resources).
+- `csm/resources.py` — Azure resource inventory via managed identity
+  (Functions host endpoint first, MSI fallback) + ARM.
+- `tests/` — 49 tests (emailer, API, auth, resources).
 - `sample-activity-log.json` — sample Activity Log fixture for
   ingestion tests (11 events → 5 findings).
 
